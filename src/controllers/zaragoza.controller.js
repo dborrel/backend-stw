@@ -1,4 +1,7 @@
 const Zaragoza = require("../services/zaragoza.service");
+const importEvents = require("../services/importEvents.service");
+const { runSync } = require("../jobs/syncEvents.job");
+
 
 const getEvents = async (req, res, next) => {
 
@@ -48,9 +51,50 @@ const search = async (req, res, next) => {
   }
 };
 
+
+const importFromZaragoza = async (req, res, next) => {
+
+  try {
+
+    const result = await importEvents();
+
+    res.json({
+      success: true,
+      ...result
+    });
+
+  } catch (err) {
+
+    next(err);
+
+  }
+
+};
+
+const manualSync = async (req, res, next) => {
+
+  try {
+
+    await runSync();
+
+    res.json({
+      success: true,
+      message: "Sync executed"
+    });
+
+  } catch (err) {
+
+    next(err);
+
+  }
+
+};
+
 module.exports = {
   getEvents,
   getEvent,
   getToday,
-  search
+  search,
+  importFromZaragoza,
+  manualSync
 };
