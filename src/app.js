@@ -4,6 +4,8 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 
 const eventRoutes = require("./routes/event.routes");
+const authRoutes = require('./routes/auth.routes');
+
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
 const zaragozaRoutes = require("./routes/zaragoza.routes");
@@ -25,6 +27,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/events", eventRoutes);
 app.use("/api/zaragoza", zaragozaRoutes);
+app.use("/api/auth", authRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
