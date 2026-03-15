@@ -1,3 +1,63 @@
+// Endpoint para actualizar perfil del usuario autenticado
+async function updateProfile(req, res) {
+  try {
+    const userId = req.user?.sub;
+    if (!userId) {
+      return res.status(401).json({ message: 'No autenticado' });
+    }
+    const {
+      name,
+      username,
+      avatarUrl,
+      bio,
+      location,
+      interests,
+      passwordChange
+    } = req.body;
+
+    const updateFields = {
+      name,
+      username,
+      avatarUrl,
+      bio,
+      location,
+      interests
+    };
+
+    // Actualizar contraseña si se solicita
+    if (passwordChange && passwordChange.currentPassword && passwordChange.newPassword) {
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+      const isValidPassword = await bcrypt.compare(passwordChange.currentPassword, user.passwordHash);
+      if (!isValidPassword) {
+        return res.status(401).json({ message: 'Contraseña actual incorrecta' });
+      }
+      updateFields.passwordHash = await bcrypt.hash(passwordChange.newPassword, 10);
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updateFields, { new: true });
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+    return res.status(200).json({
+      message: 'Perfil actualizado correctamente',
+      user: {
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        username: updatedUser.username,
+        avatarUrl: updatedUser.avatarUrl,
+        bio: updatedUser.bio,
+        location: updatedUser.location,
+        interests: updatedUser.interests || []
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error al actualizar perfil' });
+  }
+}
 // Endpoint para obtener perfil del usuario autenticado
 async function getProfile(req, res) {
   try {
@@ -315,5 +375,6 @@ module.exports = {
   loginWithGoogle,
   refreshToken,
   logout,
-  getProfile
+  getProfile,
+  updateProfile
 };
