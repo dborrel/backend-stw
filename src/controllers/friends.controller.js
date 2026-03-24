@@ -228,6 +228,13 @@ async function getSuggestedFriends(req, res) {
       return req.fromUser.toString() === userId ? req.toUser : req.fromUser;
     });
 
+    // IDs de usuarios a los que ya enviaste solicitud pendiente
+    const sentRequests = await FriendRequest.find({
+      fromUser: userId,
+      status: 'pending'
+    });
+    const sentToIds = sentRequests.map(r => r.toUser.toString());
+
     // Obtener amigos de amigos
     const friendsOfFriends = await FriendRequest.find({
       $or: [
@@ -249,8 +256,12 @@ async function getSuggestedFriends(req, res) {
         ? (req.fromUser._id.toString() !== userId.toString() ? req.fromUser : req.toUser)
         : req.toUser;
 
-      // No sugerir si ya es amigo o es el mismo usuario
-      if (suggestedUser._id.toString() === userId || friendIds.some(id => id.toString() === suggestedUser._id.toString())) {
+      // No sugerir si ya es amigo, es el mismo usuario, o ya tiene solicitud enviada
+      if (
+        suggestedUser._id.toString() === userId ||
+        friendIds.some(id => id.toString() === suggestedUser._id.toString()) ||
+        sentToIds.includes(suggestedUser._id.toString())
+      ) {
         return;
       }
 
