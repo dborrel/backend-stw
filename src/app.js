@@ -2,12 +2,13 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 
 const eventRoutes = require("./routes/event.routes");
 const authRoutes = require('./routes/auth.routes');
 const friendsRoutes = require('./routes/friends.routes');
 const chatRoutes = require('./routes/chat.routes');
-
+const statsRoutes = require("./routes/stats.routes");
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
 const zaragozaRoutes = require("./routes/zaragoza.routes");
@@ -21,7 +22,7 @@ app.use(cors({
 }));
 app.use(morgan("dev"));
 app.use(express.json({ limit: '10mb' }));
-
+app.use(cookieParser());
 app.get("/", (req, res) => {
   res.json({
     message: "API de EventConnect funcionando"
@@ -33,7 +34,7 @@ app.use("/api/zaragoza", zaragozaRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/friends", friendsRoutes);
 app.use("/api/chat", chatRoutes);
-
+app.use("/api/stats", statsRoutes);
 app.use(notFound);
 app.use(errorHandler);
 

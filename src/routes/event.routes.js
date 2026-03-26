@@ -6,10 +6,12 @@ const {
   getEventById,
   createEvent,
   updateEvent,
-  deleteEvent
+  deleteEvent,
+  toggleAttendance
 } = require("../controllers/event.controller");
 
 const validateRequest = require("../middlewares/validateRequest");
+const requireAuth = require("../middlewares/auth.middleware");
 const {
   createEventValidator,
   updateEventValidator,
@@ -25,5 +27,7 @@ router.post("/", createEventValidator, validateRequest, createEvent);
 router.put("/:id", updateEventValidator, validateRequest, updateEvent);
 
 router.delete("/:id", eventIdValidator, validateRequest, deleteEvent);
+
+router.post("/:id/attend", requireAuth, toggleAttendance);
 
 module.exports = router;
