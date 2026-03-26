@@ -301,6 +301,7 @@ router.post("/google", loginWithGoogle);
  *         - email
  *         - password
  *       example:
+
  *         email: "juan@example.com"
  *         password: "123456"
  *     UserUpdate:
@@ -313,6 +314,7 @@ router.post("/google", loginWithGoogle);
  *       example:
  *         name: "Juan Pérez"
  *         email: "juan@example.com"
+ */
 
 /**
  * @swagger

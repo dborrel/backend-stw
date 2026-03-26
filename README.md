@@ -1,3 +1,19 @@
+## Tests y cobertura
+
+Para ejecutar los tests:
+
+```bash
+npm test
+```
+
+Para obtener el porcentaje de cobertura:
+
+```bash
+npx jest --coverage --testPathIgnorePatterns=frontend-stw
+```
+
+El informe de cobertura aparecerá en consola y en la carpeta `coverage/`.
+
 # EventConnect Backend
 
 Backend API REST para EventConnect, una plataforma de gestión de eventos, usuarios, chats y amigos.
