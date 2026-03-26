@@ -10,4 +10,5 @@ COPY . .
 
 EXPOSE 3001
 
-CMD ["npm", "run", "dev"]
+RUN chmod +x ./entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]
