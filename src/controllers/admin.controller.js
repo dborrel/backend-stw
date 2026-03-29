@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Event = require('../models/Event');
+const Report = require('../models/Report');
 
 async function getDashboard(req, res) {
   try {
@@ -82,8 +83,87 @@ async function getEvents(req, res) {
   }
 }
 
+async function getReportsSummary(req, res) {
+  try {
+    const [totalReports, userReports, contentReports, eventReports] = await Promise.all([
+      Report.countDocuments(),
+      Report.countDocuments({ category: 'Usuarios' }),
+      Report.countDocuments({ category: 'Contenido' }),
+      Report.countDocuments({ category: 'Eventos' })
+    ]);
+
+    return res.status(200).json({
+      summary: {
+        totalReports,
+        contentReports,
+        userReports,
+        eventReports
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error al obtener resumen de reportes' });
+  }
+}
+
+async function getReports(req, res) {
+  try {
+    const { category } = req.query;
+
+    let filter = {};
+    if (category && ['Contenido', 'Usuarios', 'Eventos'].includes(category)) {
+      filter.category = category;
+    }
+
+    const reports = await Report.find(filter)
+      .populate('involvedUser', 'name username')
+      .populate('reportedBy', 'name username')
+      .sort({ createdAt: -1 })
+      .select('type involvedUser reportedBy description reason category status createdAt');
+
+    const mappedReports = reports.map((report) => ({
+      id: report._id,
+      type: mapReportType(report.type),
+      involvedUser: report.involvedUser?.name || 'Usuario desconocido',
+      involvedUsername: report.involvedUser?.username || 'unknown',
+      description: report.description,
+      reportedBy: report.reportedBy?.name || 'Anónimo',
+      reason: mapReportReason(report.reason),
+      date: new Date(report.createdAt).toLocaleDateString('es-ES'),
+      category: report.category,
+      status: report.status
+    }));
+
+    return res.status(200).json({ reports: mappedReports });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error al obtener reportes de admin' });
+  }
+}
+
+function mapReportType(type) {
+  const typeMap = {
+    'comment': 'Comentario inapropiado',
+    'message': 'Mensaje privado',
+    'user': 'Actividad sospechosa',
+    'event': 'Posible SPAM'
+  };
+  return typeMap[type] || type;
+}
+
+function mapReportReason(reason) {
+  const reasonMap = {
+    'spam': 'Spam',
+    'offensive_content': 'Contenido ofensivo',
+    'inappropriate': 'Contenido inapropiado',
+    'needs_urgent_review': 'Necesita revisión urgente',
+    'other': 'Otro'
+  };
+  return reasonMap[reason] || reason;
+}
+
 module.exports = {
   getDashboard,
   getUsers,
-  getEvents
+  getEvents,
+  getReportsSummary,
+  getReports
 };

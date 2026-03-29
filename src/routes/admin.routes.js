@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser');
 
 const requireAuth = require('../middlewares/auth.middleware');
 const requireAdmin = require('../middlewares/admin.middleware');
-const { getDashboard, getUsers, getEvents } = require('../controllers/admin.controller');
+const { getDashboard, getUsers, getEvents, getReportsSummary, getReports } = require('../controllers/admin.controller');
 
 const router = express.Router();
 
@@ -85,5 +85,47 @@ router.get('/users', requireAuth, requireAdmin, getUsers);
  *         description: No autorizado
  */
 router.get('/events', requireAuth, requireAdmin, getEvents);
+
+/**
+ * @swagger
+ * /api/admin/reports/summary:
+ *   get:
+ *     summary: Obtener resumen de reportes
+ *     tags: [Administración]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Resumen de reportes por categoría
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: No autorizado
+ */
+router.get('/reports/summary', requireAuth, requireAdmin, getReportsSummary);
+
+/**
+ * @swagger
+ * /api/admin/reports:
+ *   get:
+ *     summary: Listar todos los reportes
+ *     tags: [Administración]
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Filtrar por categoría (Contenido, Usuarios, Eventos)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de reportes
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: No autorizado
+ */
+router.get('/reports', requireAuth, requireAdmin, getReports);
 
 module.exports = router;
