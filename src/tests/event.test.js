@@ -4,8 +4,6 @@ const mongoose = require("mongoose");
 const app = require("../app");
 const Event = require("../models/Event");
 
-jest.setTimeout(30000); // 30 segundos para todos los hooks y tests
-
 const testEvent = {
   externalId: "test-001",
   title: "Evento de prueba",
@@ -18,16 +16,17 @@ const testEvent = {
 };
 
 beforeAll(async () => {
-  const uri = process.env.MONGODB_TEST_URI 
-    || "mongodb://eventadmin:eventpassword@localhost:27017/eventconnect_test?authSource=admin";
-  await mongoose.connect(uri);
+  // Si mongoose no está conectado, conecta usando la URI del setup file
+  if (mongoose.connection.readyState === 0) {
+    await mongoose.connect(process.env.MONGODB_URI);
+  }
   await Event.deleteMany({ externalId: "test-001" });
-}, 30000);
+});
 
 afterAll(async () => {
   await Event.deleteMany({ externalId: "test-001" });
-  await mongoose.connection.close();
-}, 30000);
+  // No cierra la conexión aquí; la cierra el teardown global
+});
 
 describe("GET /api/events", () => {
   it("debe devolver 200 y estructura correcta", async () => {

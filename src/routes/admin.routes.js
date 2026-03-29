@@ -435,20 +435,6 @@ router.get('/reports/:id', requireAuth, requireAdmin, getReportDetail);
  *         required: true
  *         schema:
  *           type: string
- *     requestBody:\n *       required: true
- *       content:\n *         application/json:
-/**
- * @swagger
- * /api/admin/reports/{id}/resolve:
- *   post:
- *     summary: Resolver un reporte
- *     tags: [Administración]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
  *     requestBody:
  *       required: true
  *       content:
