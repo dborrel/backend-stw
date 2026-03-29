@@ -1,30 +1,27 @@
 
 require('dotenv').config();
-// Use a dedicated test database with authentication, matching Docker credentials
-process.env.MONGODB_URI = process.env.MONGODB_URI_TEST 
-  || 'mongodb://eventadmin:eventpassword@localhost:27017/eventconnect_test?authSource=admin';
 const request = require('supertest');
 const app = require('../app');
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const connectDB = require('../config/db');
 
-jest.setTimeout(20000); // 20 segundos
-
 describe('Auth Controller', () => {
   let server;
   beforeAll(async () => {
-    await connectDB();
+    try {
+      await connectDB();
+    } catch (error) {
+      console.error('Error en connectDB durante beforeAll:', error.message);
+      // Continúa de todas formas para permitir que el test falle apropiadamente
+    }
     server = app.listen(4001);
     await User.deleteMany({});
   });
 
   afterAll(async () => {
     await User.deleteMany({});
-    // Cierra la conexión solo si sigue abierta
-    if (mongoose.connection.readyState !== 0) {
-      await mongoose.connection.close();
-    }
+    // No cierra la conexión aquí; la cierra el teardown global
     if (server && server.close) await server.close();
   });
 
