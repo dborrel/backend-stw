@@ -55,7 +55,7 @@ async function sendFriendRequest(req, res) {
 async function acceptFriendRequest(req, res) {
   try {
     const userId = req.user?.sub;
-    const { requestId } = req.body;
+    const { requestId } = req.params;
 
     if (!userId || !requestId) {
       return res.status(400).json({ message: 'Datos incompletos' });
@@ -93,7 +93,7 @@ async function acceptFriendRequest(req, res) {
 async function rejectFriendRequest(req, res) {
   try {
     const userId = req.user?.sub;
-    const { requestId } = req.body;
+    const { requestId } = req.params;
 
     if (!userId || !requestId) {
       return res.status(400).json({ message: 'Datos incompletos' });
@@ -180,7 +180,7 @@ async function getFriends(req, res) {
 async function removeFriend(req, res) {
   try {
     const userId = req.user?.sub;
-    const { friendId } = req.body;
+    const { friendId } = req.params;
 
     if (!userId || !friendId) {
       return res.status(400).json({ message: 'Datos incompletos' });
