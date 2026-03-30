@@ -52,51 +52,53 @@ router.post('/request', sendFriendRequest);
 
 /**
  * @swagger
- * /api/friends/accept:
- *   post:
+ * /api/friends/{requestId}/accept:
+ *   put:
  *     summary: Aceptar solicitud de amistad
  *     tags: [Amigos]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               requestId:
- *                 type: string
- *                 description: ID de la solicitud a aceptar
+ *     parameters:
+ *       - in: path
+ *         name: requestId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la solicitud a aceptar
  *     responses:
  *       200:
  *         description: Solicitud aceptada
  *       400:
  *         description: Solicitud inválida
+ *       403:
+ *         description: No tienes permiso para aceptar esta solicitud
+ *       404:
+ *         description: Solicitud no encontrada
  */
-router.post('/accept', acceptFriendRequest);
+router.put('/:requestId/accept', acceptFriendRequest);
 
 /**
  * @swagger
- * /api/friends/reject:
- *   post:
+ * /api/friends/{requestId}/reject:
+ *   put:
  *     summary: Rechazar solicitud de amistad
  *     tags: [Amigos]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               requestId:
- *                 type: string
- *                 description: ID de la solicitud a rechazar
+ *     parameters:
+ *       - in: path
+ *         name: requestId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la solicitud a rechazar
  *     responses:
  *       200:
  *         description: Solicitud rechazada
  *       400:
  *         description: Solicitud inválida
+ *       403:
+ *         description: No tienes permiso para rechazar esta solicitud
+ *       404:
+ *         description: Solicitud no encontrada
  */
-router.post('/reject', rejectFriendRequest);
+router.put('/:requestId/reject', rejectFriendRequest);
 
 /**
  * @swagger
@@ -154,27 +156,26 @@ router.get('/suggested', getSuggestedFriends);
 
 /**
  * @swagger
- * /api/friends/remove:
- *   post:
+ * /api/friends/{friendId}:
+ *   delete:
  *     summary: Eliminar amigo
  *     tags: [Amigos]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               friendId:
- *                 type: string
- *                 description: ID del amigo a eliminar
+ *     parameters:
+ *       - in: path
+ *         name: friendId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del amigo a eliminar
  *     responses:
  *       200:
  *         description: Amigo eliminado
  *       400:
  *         description: Solicitud inválida
+ *       404:
+ *         description: No sois amigos
  */
-router.post('/remove', removeFriend);
+router.delete('/:friendId', removeFriend);
 
 /**
  * @swagger

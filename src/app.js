@@ -10,6 +10,7 @@ const friendsRoutes = require('./routes/friends.routes');
 const chatRoutes = require('./routes/chat.routes');
 const statsRoutes = require("./routes/stats.routes");
 const adminRoutes = require('./routes/admin.routes');
+const meetupRoutes = require('./routes/meetup.routes');
 
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
@@ -29,7 +30,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'http://localhost:3000',
+      url: 'http://localhost:3001',
       description: 'Servidor local',
     },
   ],
@@ -70,7 +71,7 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/stats", statsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use("/api/recommend", recommendRoutes);
-
+app.use("/api/meetups", meetupRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

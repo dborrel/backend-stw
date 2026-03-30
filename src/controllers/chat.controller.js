@@ -310,10 +310,48 @@ async function markConversationAsRead(req, res) {
   }
 }
 
+async function getUnreadCountsByFriend(req, res) {
+  try {
+    const userId = req.user?.sub;
+
+    if (!userId) {
+      return res.status(401).json({ message: 'No autenticado' });
+    }
+
+    const conversations = await Conversation.find({
+      participants: userId
+    }).populate('participants', 'name username email avatarUrl bio location');
+
+    const unreadMessagesByFriend = {};
+
+    for (const conversation of conversations) {
+      const otherUser = getOtherParticipant(conversation, userId);
+
+      if (!otherUser) continue;
+
+      const unreadCount = await Message.countDocuments({
+        conversationId: conversation._id,
+        receiver: userId,
+        isRead: false
+      });
+
+      unreadMessagesByFriend[otherUser._id.toString()] = unreadCount;
+    }
+
+    return res.status(200).json({
+      unreadMessagesByFriend
+    });
+  } catch (error) {
+    console.error('GET UNREAD COUNTS BY FRIEND ERROR:', error);
+    return res.status(500).json({ message: 'Error al obtener mensajes no leídos por amigo' });
+  }
+}
+
 module.exports = {
   createOrGetConversation,
   getMyConversations,
   getConversationMessages,
   sendMessage,
-  markConversationAsRead
+  markConversationAsRead,
+  getUnreadCountsByFriend
 };

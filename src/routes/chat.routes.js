@@ -143,6 +143,28 @@ router.patch('/conversations/:conversationId/read', chatController.markConversat
 
 /**
  * @swagger
+ * /api/chat/unread-counts-by-friend:
+ *   get:
+ *     summary: Obtener conteo de mensajes no leídos por amigo
+ *     tags: [Chat]
+ *     responses:
+ *       200:
+ *         description: Conteo de mensajes no leídos por amigo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties:
+ *                 type: integer
+ *       401:
+ *         description: No autenticado
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/unread-counts-by-friend', chatController.getUnreadCountsByFriend);
+
+/**
+ * @swagger
  * components:
  *   schemas:
  *     Conversation:
